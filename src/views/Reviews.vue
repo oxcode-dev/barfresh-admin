@@ -10,7 +10,7 @@
             <ReviewsTable
                 :reviews="allReviews"
                 :editReview="handleSelectReview"
-                :deleteReview="deleteReview"
+                :deleteReview="handleDeleteReview"
             />
 
             <div class="flex justify-between items-center py-3 px-2">
@@ -32,7 +32,18 @@
             :show="showForm" 
             :review="selectedReview"
             @close="showForm = $event"
+            @alert="showAlert = $event"
             v-if="showForm"
+        />
+
+        <NotificationBar 
+            :active="showAlert"
+            @close="showAlert = $event"
+        />
+        <ConfirmPromptBar 
+            :active="showDialog"
+            :submit-fn="deleteReview"
+            @close="showDialog = $event"
         />
     </Layout>
 </template>
@@ -43,6 +54,8 @@ import { onBeforeMount, computed, ref} from 'vue'
 import { useReviewsStore } from '../stores/reviews'
 import ReviewForm from '../forms/ReviewForm.vue';
 import ReviewsTable from '../components/tables/ReviewsTable.vue';
+import NotificationBar from '../components/NotificationBar.vue';
+import ConfirmPromptBar from '../components/ConfirmPromptBar.vue';
 import { db } from '../firebase.config';
 import 
   { collection, doc, getDocs, getDoc, getCountFromServer, query, orderBy, startAfter, endBefore, limit, limitToLast } 
@@ -52,6 +65,8 @@ const reviewsStore = useReviewsStore()
 const reviewCollectionRef = collection(db, "reviews")
 
 const showForm = ref(false)
+const showAlert = ref(false)
+const showDialog = ref(false)
 const selectedReview = ref({})
 
 function handleSelectReview (review={}) {
@@ -59,13 +74,19 @@ function handleSelectReview (review={}) {
     showForm.value = true
 }
 
-function deleteReview(review) {
-    if(confirm('Are you sure, you want to delete this review?')) {
-        reviewsStore.deleteReview(review.id)
-    }
+async function handleDeleteReview(option) {
+    selectedReview.value = option
+    showDialog.value = true
 }
 
-// const isLoading = ref(false)
+async function deleteReview () {
+    await reviewsStore.deleteReview(selectedReview.value.id)
+    showDialog.value = false
+    showAlert.value = true
+    selectedReview.value = {}
+    getReviews()
+}
+
 const orderByParam = ref('created_at')
 const limitNumber = ref(10)
 const limitOrder = ref('desc')

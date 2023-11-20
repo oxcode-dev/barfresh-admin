@@ -9,7 +9,7 @@
             <FaqsTable
                 :faqs="faqs"
                 :editFaqs="handleSelectFaqs"
-                :deleteFaqs="deleteFaqs"
+                :deleteFaqs="handleDeleteFaqs"
             />
         </main>
 
@@ -17,7 +17,18 @@
             :show="showForm" 
             :faqs="selectedFaqs"
             @close="showForm = $event"
+            @alert="showAlert = $event"
             v-if="showForm"
+        />
+
+        <NotificationBar 
+            :active="showAlert"
+            @close="showAlert = $event"
+        />
+        <ConfirmPromptBar 
+            :active="showDialog"
+            :submit-fn="deleteFaqs"
+            @close="showDialog = $event"
         />
     </Layout>
 </template>
@@ -28,11 +39,15 @@ import { onBeforeMount, computed, ref} from 'vue'
 import { useFaqsStore } from '../stores/faqs'
 import FaqsTable from '../components/tables/FaqsTable.vue'
 import FaqsForm from '../forms/FaqsForm.vue'
+import NotificationBar from '../components/NotificationBar.vue';
+import ConfirmPromptBar from '../components/ConfirmPromptBar.vue';
 
 const faqsStore = useFaqsStore()
 
 const faqs = computed(() => faqsStore.getFaqs || [])
 const showForm = ref(false)
+const showAlert = ref(false)
+const showDialog = ref(false)
 const selectedFaqs = ref({})
 
 function handleSelectFaqs (option={}) {
@@ -40,10 +55,16 @@ function handleSelectFaqs (option={}) {
     showForm.value = true
 }
 
-function deleteFaqs(option) {
-    if(confirm('Are you sure, you want to delete this faqs?')) {
-        faqsStore.deleteFaqs(option.id)
-    }
+async function handleDeleteFaqs(option) {
+    selectedFaqs.value = option
+    showDialog.value = true
+}
+
+async function deleteFaqs () {
+    await faqsStore.deleteFaqs(selectedFaqs.value.id)
+    showDialog.value = false
+    showAlert.value = true
+    selectedFaqs.value = {}
 }
 
 onBeforeMount(() => {

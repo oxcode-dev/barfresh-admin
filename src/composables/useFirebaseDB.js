@@ -1,12 +1,10 @@
-import { ref } from "vue";
+// import { ref } from "vue";
 import 
   { addDoc, collection, deleteDoc, doc, getDoc, getDocs, updateDoc, getCountFromServer, query, where, Timestamp, } 
 from 'firebase/firestore'
 import { db } from '../firebase.config';
 
 export const useFirebaseDB = () => {
-    const data_count = ref(0)
-    const data = ref([])
 
     const getDataWithId = async (table, id) => {
       const dataDoc = doc(db, table, id);
@@ -18,7 +16,7 @@ export const useFirebaseDB = () => {
     const getTotalData = async(table) => {
       const collectionRef = collection(db, table);
       const snapshot = await getCountFromServer(collectionRef);
-      data_count.value = snapshot.data().count;
+      return snapshot.data().count;
     }
 
     const getAllData = async (table) =>  {
@@ -26,7 +24,7 @@ export const useFirebaseDB = () => {
 
       try{
         const result = await getDocs(collectionRef)
-        data.value = result.docs.map(doc => ({...doc.data(), id: doc.id}))
+        return result.docs.map(doc => ({...doc.data(), id: doc.id}))
       }
       catch(error) {
         console.log(error)
@@ -82,7 +80,7 @@ export const useFirebaseDB = () => {
     }
 
     return { 
-      data_count, data, getTotalData, getAllData, addData, updateData, 
+      getTotalData, getAllData, addData, updateData, 
       deleteData, getDataWithId, getDataWhereKeyValue, convertTimestamp
     }
 }

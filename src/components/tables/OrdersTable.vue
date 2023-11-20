@@ -22,7 +22,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="bg-gray-100 border-b" v-for="(option, key) in faqs" :key="key">
+                            <tr class="bg-gray-100 border-b" v-for="(option, key) in orders" :key="key">
                                 <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap block">
                                     <router-link class="w-full h-full" :to="`/orders/${option.id}`">
                                         {{ option?.name || 'N/A' }}
@@ -30,7 +30,7 @@
                                 </td>
                                 <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
                                     <router-link :to="`/orders/${option.id}`" class="w-full h-full">
-                                        21/10/2023
+                                        <span>{{ convertTimestamp(option.created_at) }}</span>
                                     </router-link>
                                 </td>
                                 <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
@@ -54,10 +54,12 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { useFirebaseDB } from '../../composables/useFirebaseDB'
+
+const { convertTimestamp } = useFirebaseDB()
 
 
 const props = defineProps({
-    faqs: Array,
+    orders: Array,
 })
 </script>

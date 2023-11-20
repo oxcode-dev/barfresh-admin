@@ -47,7 +47,11 @@
                         <textarea required v-model="form.description" class="border rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full"></textarea>
                     </div>
 
-                    <button :disabled="isLoading" type="submit" class="transition duration-200 bg-green-700 hover:bg-green-600 focus:bg-green-700 focus:shadow-sm focus:ring-4 focus:ring-green-500 focus:ring-opacity-50 text-white w-full py-2.5 rounded-lg text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block">
+                    <div>
+                        <input type="file" ref="input" @change="uploadImage" />
+                    </div>
+
+                    <button :disabled="isLoading" type="submit" class="transition duration-200 bg-green-700 hover:bg-green-600 focus:bg-green-700 focus:shadow-sm focus:ring-4 focus:ring-green-500 focus:ring-opacity-50 text-white w-full py-2.5 rounded-lg text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block mt-6">
                         <span>{{ isLoading ? 'Loading...' : 'Submit' }}</span>
                     </button>
                 </form>
@@ -58,17 +62,22 @@
 
 <script setup>
 import Modal from '../components/Modal.vue';
-import { computed, ref } from 'vue';
+import { computed, ref as vueRef } from 'vue';
 import { useProductsStore } from '../stores/products';
 import { useCategoriesStore } from '../stores/categories';
 import { serverTimestamp } from 'firebase/firestore';
+import { storage } from '../firebase.config';
+import {
+    ref, uploadBytes, getDownloadURL, deleteObject,
+} from "firebase/storage";
+import { v4 } from 'uuid';
 
 const productsStore = useProductsStore()
 const categoriesStore = useCategoriesStore()
 
 const categories = computed(() => categoriesStore.getCategories || [])
 
-const closeIcon = ref(`<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>`)
+const closeIcon = vueRef(`<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>`)
 const props = defineProps({
     show: {
         type: Boolean,
@@ -79,8 +88,8 @@ const props = defineProps({
         default: () => {}
     }
 })
-const emit = defineEmits(['close'])
-const form = ref(props.product.id ? JSON.parse(JSON.stringify(props.product)) : {
+const emit = defineEmits(['close', 'alert'])
+const form = vueRef(props.product.id ? JSON.parse(JSON.stringify(props.product)) : {
     name: '',
     quantity: '',
     price: null,
@@ -89,9 +98,10 @@ const form = ref(props.product.id ? JSON.parse(JSON.stringify(props.product)) : 
     description: '',
     created_at: '',
     updated_at: '',
+    image: '',
 })
 
-const isLoading = ref(false)
+const isLoading = vueRef(false)
 
 const close = () => {
     if (props.show) {
@@ -99,23 +109,48 @@ const close = () => {
     }
 }
 
+const imageArray = vueRef(null)
+const uploadImage = (e) => {
+    imageArray.value = e.target.files[0]
+}
+
 const submit = async() => {
     if(form.value.name && form.value.price) {
         isLoading.value = true
-        if(props.product && props.product.id) {
-            form.value.updated_at = serverTimestamp()
-            await productsStore.updateProduct(form.value, props.product.id)
-            isLoading.value = false
-            close()
+        if (imageArray.value !== null) {
+            const imageRef = ref(storage, `products/${imageArray.value.name + v4()}`);
+            await uploadBytes(imageRef, imageArray.value).then((snapshot) => {
+                getDownloadURL(snapshot.ref).then((url) => {
+                    form.value.image = url
+                    if(props.product && props.product.image) {
+                        const deleteImageRef = ref(storage, props.product.image);
+                        deleteObject(deleteImageRef)
+                            .catch(error => console.log(error))
+                    }
+                    handleSubmit()
+                    // return console.log(url, imageUrl.value)
+                });
+            });
         }
         else {
-            form.value.created_at = serverTimestamp()
-            form.value.updated_at = serverTimestamp()
-            await productsStore.addProduct(form.value)
-            isLoading.value = false
-            close()
+            handleSubmit()
         }
     }
+}
+
+const handleSubmit = async() => {
+    if(props.product && props.product.id) {
+        form.value.updated_at = serverTimestamp()
+        await productsStore.updateProduct(form.value, props.product.id)  
+    }
+    else {
+        form.value.created_at = serverTimestamp()
+        form.value.updated_at = serverTimestamp()
+        await productsStore.addProduct(form.value)
+    }
+    isLoading.value = false
+    emit('alert', true)
+    close()
 }
 
 </script>

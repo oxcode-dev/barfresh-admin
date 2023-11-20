@@ -4,7 +4,7 @@
         <main class="rounded-lg bg-white text-slate-500 px-4 py-4">
             <div class="flex items-center justify-between px-2">
                 <h2 class="text-2xl font-semibold text-slate-800">Order</h2>
-                <!-- <button @click="handleSelectFaqs({})" class="px-4 bg-green-700 text-white py-1.5 rounded">Add</button> -->
+                <button @click="() => showDialog = true" class="px-4 bg-red-700 text-white py-1.5 rounded">Delete</button>
             </div>
 
             <div>
@@ -30,7 +30,7 @@
                                         ></button>
                                     </div>
 
-                                    <div v-else class="flex items-center space-x-2">
+                                    <div v-else class="flex flex-wrap items-center space-y-2 md:space-y-0 md:space-x-2">
                                         <select v-model="status" class="border rounded-md py-2 px-2 text-sm">
                                             <option
                                                 v-for="(option, key) in statuses" 
@@ -114,7 +114,7 @@
                                             </div>
                                             <div class="ml-3 flex flex-col">
                                                 <a class="text-gray-700 whitespace-no-wrap text-sm ms:text-lg" href="/store/qhijYaI8qkPdxAiTf3cj">
-                                                    {{ getProductDetails(item.product_id).name }}
+                                                    {{ getProductDetails(item.product_id)?.name || 'N/A' }}
                                                 </a>
                                             </div>
                                         </div>
@@ -172,7 +172,17 @@
                     </div>
                 </div>
             </div>
-        </main>       
+        </main>      
+        
+        <NotificationBar 
+            :active="showAlert"
+            @close="showAlert = $event"
+        />
+        <ConfirmPromptBar 
+            :active="showDialog"
+            :submit-fn="deleteOrder"
+            @close="showDialog = $event"
+        />
     </Layout>
 </template>
   
@@ -182,13 +192,19 @@ import { onBeforeMount, computed, ref } from 'vue'
 import { useOrdersStore } from '../../stores/orders'
 import { useProductsStore } from '../../stores/products'
 import { useRoute } from 'vue-router'
+import NotificationBar from '../../components/NotificationBar.vue';
+import ConfirmPromptBar from '../../components/ConfirmPromptBar.vue';
 import { isEmpty, o_O } from '../../helpers'
 import { useFirebaseDB } from '../../composables/useFirebaseDB'
+import router from '../../router'
 
 const ordersStore = useOrdersStore()
 const productsStore = useProductsStore()
 
 const toggleStatusForm = ref(false)
+const showAlert = ref(false)
+const showDialog = ref(false)
+
 const route = useRoute()
 const {id} = route.params
 const orders = computed(() => ordersStore.getOrders || [])
@@ -198,7 +214,7 @@ const products = computed(() => productsStore.getProducts || [])
 const selectedOrder = computed(() => orders.value.find(n => n.id === id) || {})
 const status = ref(selectedOrder.value?.status || '')
 
-const { getDataWhereKeyValue, convertTimestamp, updateData } = useFirebaseDB()
+const { getDataWhereKeyValue, convertTimestamp, updateData, deleteData } = useFirebaseDB()
 
 function datetimeFormat(timestamp) {
     if(!isEmpty(timestamp)) {
@@ -213,12 +229,10 @@ const getProductDetails = product_id => {
 
 let fetchOrderItems = async() => {
     let [error, data] = await o_O(getDataWhereKeyValue('order_items', 'order_id', id))
-    // console.log(error, data) 
     if(error) return console.log(error, data)
     orderItems.value = data
 }
 
-// let statuses = ref([ 'pending', 'Awaiting Shipment', 'Shipped', 'Cancelled', 'Declined', 'Delivered'])
 let statuses = ref([ 'Ordered', 'Awaiting Shipment', 'In Transit', 'Cancelled', 'Declined', 'Out for delivery', 'Delivered'])
 const PencilIcon = ref(`<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg>`)
 const CloseIcon = ref(`<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>`)
@@ -230,9 +244,23 @@ const editStatus = async() => {
         let [error, data] = await o_O(updateData('orders', form, id))
         if(error) return console.log(error, data)
         ordersStore.fetchOrders()
-        alert('Successfully Updated')
+
+        // alert('Successfully Updated')
+        showAlert.value = true
         toggleStatusForm.value = false
     }
+}
+
+const deleteOrder = async () => {
+    await ordersStore.deleteOrders(selectedOrder.value.id)
+
+    orderItems.value.map((item) => {
+        deleteData('order_items', item.id)
+    })
+
+    showDialog.value = false
+    showAlert.value = true
+    setTimeout(() => router.push('/orders'), 300)
 }
 
 onBeforeMount(() => {

@@ -7,36 +7,21 @@
                 <!-- <button @click="handleSelectFaqs({})" class="px-4 bg-green-700 text-white py-1.5 rounded">Add</button> -->
             </div>
             <OrdersTable
-                :faqs="orders"
+                :orders="orders"
             />
         </main>
-
-       
     </Layout>
 </template>
   
 <script setup>
 import Layout from '../../layout/index.vue'
-import { onBeforeMount, computed, ref} from 'vue'
+import { onBeforeMount, computed } from 'vue'
 import { useOrdersStore } from '../../stores/orders'
 import OrdersTable from '../../components/tables/OrdersTable.vue'
 
 const ordersStore = useOrdersStore()
 
 const orders = computed(() => ordersStore.getOrders || [])
-// const showForm = ref(false)
-// const selectedFaqs = ref({})
-
-// function handleSelectFaqs (option={}) {
-//     selectedFaqs.value = option
-//     showForm.value = true
-// }
-
-// function deleteFaqs(option) {
-//     if(confirm('Are you sure, you want to delete this faqs?')) {
-//         ordersStore.deleteFaqs(option.id)
-//     }
-// }
 
 onBeforeMount(() => {
     ordersStore.fetchOrders()

@@ -42,7 +42,7 @@ const props = defineProps({
         default: () => {}
     }
 })
-const emit = defineEmits(['close'])
+const emit = defineEmits(['close', 'alert'])
 const form = ref(props.category.id ? JSON.parse(JSON.stringify(props.category)) : {
     name: '',
 })
@@ -63,14 +63,13 @@ const submit = async() => {
         form.value.slug = slugifyName.value
         if(props.category && props.category.id) {
             await categoriesStore.updateCategory(form.value, props.category.id)
-            isLoading.value = false
-            close()
         }
         else {
             await categoriesStore.addCategory(form.value)
-            isLoading.value = false
-            close()
         }
+        isLoading.value = false
+        emit('alert', true)
+        close()
     }
 }
 

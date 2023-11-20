@@ -53,7 +53,7 @@ const props = defineProps({
         default: () => {}
     }
 })
-const emit = defineEmits(['close'])
+const emit = defineEmits(['close', 'alert'])
 const form = ref(props.review.id ? JSON.parse(JSON.stringify(props.review)) : {
     name: '',
     rate: 0,
@@ -77,15 +77,14 @@ const submit = async() => {
         isLoading.value = true
         if(props.review && props.review.id) {
             await reviewsStore.updateReview(form.value, props.review.id)
-            isLoading.value = false
-            close()
         }
         else {
             form.value.created_at = serverTimestamp()
             await reviewsStore.addReview(form.value)
-            isLoading.value = false
-            close()
         }
+        isLoading.value = false
+        emit('alert', true)
+        close()
     }
 }
 

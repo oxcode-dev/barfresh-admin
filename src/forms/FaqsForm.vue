@@ -46,7 +46,7 @@ const props = defineProps({
         default: () => {}
     }
 })
-const emit = defineEmits(['close'])
+const emit = defineEmits(['close', 'alert'])
 const form = ref(props.faqs.id ? JSON.parse(JSON.stringify(props.faqs)) : {
     answer: '',
     question: '',
@@ -65,14 +65,13 @@ const submit = async() => {
         isLoading.value = true
         if(props.faqs && props.faqs.id) {
             await faqsStore.updateFaqs(form.value, props.faqs.id)
-            isLoading.value = false
-            close()
         }
         else {
             await faqsStore.addFaqs(form.value)
-            isLoading.value = false
-            close()
         }
+        isLoading.value = false
+        emit('alert', true)
+        close()
     }
 }
 

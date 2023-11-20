@@ -9,7 +9,7 @@
             <CategoriesTable
                 :categories="categories"
                 :editCategory="handleSelectCategory"
-                :deleteCategory="deleteCategory"
+                :deleteCategory="handleDeleteCategory"
             />
         </main>
 
@@ -18,6 +18,17 @@
             :category="selectedCategory"
             @close="showForm = $event"
             v-if="showForm"
+            @alert="showAlert = $event"
+        />
+
+        <NotificationBar 
+            :active="showAlert"
+            @close="showAlert = $event"
+        />
+        <ConfirmPromptBar 
+            :active="showDialog"
+            :submit-fn="deleteCategory"
+            @close="showDialog = $event"
         />
     </Layout>
 </template>
@@ -28,11 +39,15 @@ import { onBeforeMount, computed, ref} from 'vue'
 import { useCategoriesStore } from '../stores/categories'
 import CategoriesTable from '../components/tables/CategoriesTable.vue'
 import CategoryForm from '../forms/CategoryForm.vue'
+import NotificationBar from '../components/NotificationBar.vue';
+import ConfirmPromptBar from '../components/ConfirmPromptBar.vue';
 
 const categoriesStore = useCategoriesStore()
 
 const categories = computed(() => categoriesStore.getCategories || [])
 const showForm = ref(false)
+const showAlert = ref(false)
+const showDialog = ref(false)
 const selectedCategory = ref({})
 
 function handleSelectCategory (category={}) {
@@ -40,10 +55,16 @@ function handleSelectCategory (category={}) {
     showForm.value = true
 }
 
-function deleteCategory(category) {
-    if(confirm('Are you sure, you want to delete this category?')) {
-        categoriesStore.deleteCategory(category.id)
-    }
+async function handleDeleteCategory(option) {
+    selectedCategory.value = option
+    showDialog.value = true
+}
+
+async function deleteCategory () {
+    await categoriesStore.deleteCategory(selectedCategory.value.id)
+    showDialog.value = false
+    showAlert.value = true
+    selectedCategory.value = {}
 }
 
 onBeforeMount(() => {

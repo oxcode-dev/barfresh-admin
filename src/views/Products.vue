@@ -23,6 +23,17 @@
                 :product="selectedProduct"
                 v-if="showForm"
                 @close="showForm = $event"
+                @alert="showAlert = $event"
+            />
+
+            <NotificationBar 
+                :active="showAlert"
+                @close="showAlert = $event"
+            />
+            <ConfirmPromptBar 
+                :active="showDialog"
+                :submit-fn="deleteProduct"
+                @close="showDialog = $event"
             />
         </main>
     </Layout>
@@ -30,16 +41,21 @@
 
 <script setup>
 import Layout from '../layout/index.vue'
-import { computed, onBeforeMount, ref } from 'vue' //*321*00# *321*02*080# 09059672002 08076009888
+import { computed, onBeforeMount, ref } from 'vue'
+//*321*00# *321*02*080# 09059672002 08076009888
 import { useProductsStore } from '../stores/products'
 import ProductsTable from '../components/tables/ProductsTable.vue';
 import EmptyCard from '../components/EmptyCard.vue';
+import NotificationBar from '../components/NotificationBar.vue';
+import ConfirmPromptBar from '../components/ConfirmPromptBar.vue';
 import ProductForm from '../forms/ProductForm.vue'
 
 const productsStore = useProductsStore()
 const products = computed(() => productsStore.getProducts || [])
 
 const showForm = ref(false)
+const showAlert = ref(false)
+const showDialog = ref(false)
 const selectedProduct = ref({})
 
 function handleSelectProduct (option={}) {
@@ -47,10 +63,16 @@ function handleSelectProduct (option={}) {
     showForm.value = true
 }
 
-function handleDeleteProduct(option) {
-    if(confirm('Are you sure, you want to delete this product?')) {
-        productsStore.deleteProduct(option.id)
-    }
+async function handleDeleteProduct(option) {
+    selectedProduct.value = option
+    showDialog.value = true
+}
+
+async function deleteProduct () {
+    await productsStore.deleteProduct(selectedProduct.value.id)
+    showDialog.value = false
+    showAlert.value = true
+    selectedProduct.value = {}
 }
 
 onBeforeMount(() => {
