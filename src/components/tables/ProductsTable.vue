@@ -57,7 +57,7 @@
                     </table>
                 </div>
 
-                <EmptyState v-if="products && products.length === 0" />
+                <EmptyState v-else />
             </div>
         </div>
     </div>
