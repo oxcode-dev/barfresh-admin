@@ -2,7 +2,7 @@
 <template>
     <Layout>
         <div class="flex flex-wrap h-full sm:h-[calc(100vh-200px)] sm:overflow-hidden">
-            <div class="w-full sm:w-1/3 h-full">
+            <div class="w-full sm:w-1/3 h-full mb-4">
                 <div class="mr-4 bg-white rounded-lg py-4 h-full px-4 w-full">
                     <nav class="py-6 w-full">
                         <a 
@@ -17,7 +17,7 @@
                 </div>
             </div>
             <div class="w-full sm:w-2/3 h-full mb-4">
-                <div class="ml-4 bg-white overflow-y-auto rounded-lg py-4 h-full px-6">
+                <div class="sm:ml-4 bg-white overflow-y-auto rounded-lg py-4 h-full px-6">
                     <ChangePasswordForm v-if="tab === 0" />
                     <ChangeUserEmailForm v-if="tab === 1" />
                     <DeleteUserForm v-if="tab === 2" />

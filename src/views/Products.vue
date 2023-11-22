@@ -13,10 +13,6 @@
                 :edit-product="handleSelectProduct"
                 :delete-product="handleDeleteProduct"
             />
-            
-            <EmptyCard
-                v-if="products.length === 0"
-            />
 
             <ProductForm
                 :show="showForm"
@@ -45,7 +41,6 @@ import { computed, onBeforeMount, ref } from 'vue'
 //*321*00# *321*02*080# 09059672002 08076009888
 import { useProductsStore } from '../stores/products'
 import ProductsTable from '../components/tables/ProductsTable.vue';
-import EmptyCard from '../components/EmptyCard.vue';
 import NotificationBar from '../components/NotificationBar.vue';
 import ConfirmPromptBar from '../components/ConfirmPromptBar.vue';
 import ProductForm from '../forms/ProductForm.vue'

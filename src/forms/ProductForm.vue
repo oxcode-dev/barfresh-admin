@@ -48,7 +48,17 @@
                     </div>
 
                     <div>
-                        <input type="file" ref="input" @change="uploadImage" />
+                        <div class="relative h-24 border border-dashed rounded flex justify-center items-center">
+                            <img class="absolute w-full h-full object-contain opacity-40" :src="imagePreview" v-if="imagePreview" />
+                            <div class="text-center text-gray-800 inline-flex flex-col items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" /></svg>
+                                <span>Upload an Image</span>
+                            </div>
+                            <input 
+                                type="file" class="absolute w-full h-full cursor-pointer opacity-0 " 
+                                ref="input" @change="uploadImage"
+                            />
+                        </div>
                     </div>
 
                     <button :disabled="isLoading" type="submit" class="transition duration-200 bg-green-700 hover:bg-green-600 focus:bg-green-700 focus:shadow-sm focus:ring-4 focus:ring-green-500 focus:ring-opacity-50 text-white w-full py-2.5 rounded-lg text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block mt-6">
@@ -110,9 +120,16 @@ const close = () => {
 }
 
 const imageArray = vueRef(null)
+const preview = vueRef(props.product?.image || null)
 const uploadImage = (e) => {
     imageArray.value = e.target.files[0]
+    var reader = new FileReader();
+    reader.onload = function(){
+      preview.value = reader.result;
+    };
+    reader.readAsDataURL(e.target.files[0]);
 }
+const imagePreview = computed(() => preview.value)
 
 const submit = async() => {
     if(form.value.name && form.value.price) {

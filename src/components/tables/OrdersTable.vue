@@ -3,7 +3,7 @@
     <div class="flex flex-col">
         <div class="overflow-x-auto sm:mx-0.5 lg:mx-0.5">
             <div class="py-2 inline-block min-w-full">
-                <div class="overflow-hidden">
+                <div v-if="orders && orders.length > 0" class="overflow-hidden">
                     <table class="min-w-full">
                         <thead class="bg-white border-b">
                             <tr>
@@ -48,6 +48,7 @@
                         </tbody>
                     </table>
                 </div>
+                <EmptyState v-if="orders && orders.length === 0" />
             </div>
         </div>
     </div>
@@ -55,6 +56,7 @@
 
 <script setup>
 import { useFirebaseDB } from '../../composables/useFirebaseDB'
+import EmptyState from '../EmptyState.vue'
 
 const { convertTimestamp } = useFirebaseDB()
 
