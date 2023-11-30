@@ -11,6 +11,7 @@ import ProductsView from '../views/Products.vue'
 import OrdersView from '../views/orders/index.vue'
 import OrderView from '../views/orders/_id.vue'
 import TestView from '../views/test.vue'
+import NotFoundView from '../views/404.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -25,7 +26,13 @@ const router = createRouter({
     { path: '/orders/:id', name: 'orders_single', component: OrderView, meta: { requiresAuth: true }, },
     { path: '/auth', name: 'auth', component: AuthView },
     { path: '/test', name: 'test', component: TestView },
-  ]
+    { path: '/404', name: 'Not Found', component: NotFoundView },
+    { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFoundView },
+    { path: '/:pathMatch(.*)', name: 'bad-not-found', component: NotFoundView },
+  ],
+  // scrollBehavior (to, from, savedPosition) {
+  //   return { x: 0, y: 0 }
+  // }
 })
 
 router.beforeEach((to, from, next) => {
