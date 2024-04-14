@@ -8,7 +8,6 @@
             </div>
 
             <ProductsTable
-                v-if="products.length > 0"
                 :products="products"
                 :edit-product="handleSelectProduct"
                 :delete-product="handleDeleteProduct"

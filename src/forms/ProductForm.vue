@@ -32,10 +32,10 @@
                         <input required type="number" v-model.number="form.price" class="border rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full" />
                     </div>
 
-                    <div>
+                    <!-- <div>
                         <label class="font-semibold text-sm text-gray-600 pb-1 block">Discount</label>
                         <input required type="number" v-model.number="form.discount" class="border rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full" />
-                    </div>
+                    </div> -->
 
                     <div>
                         <label class="font-semibold text-sm text-gray-600 pb-1 block">Quantity</label>
@@ -44,7 +44,7 @@
 
                     <div>
                         <label class="font-semibold text-sm text-gray-600 pb-1 block">Description</label>
-                        <textarea required v-model="form.description" class="border rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full"></textarea>
+                        <textarea required v-model="form.description" class="h-24 border rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full"></textarea>
                     </div>
 
                     <div>
@@ -101,9 +101,9 @@ const props = defineProps({
 const emit = defineEmits(['close', 'alert'])
 const form = vueRef(props.product.id ? JSON.parse(JSON.stringify(props.product)) : {
     name: '',
-    quantity: '',
+    quantity: null,
     price: null,
-    discount: null,
+    discount: 0,
     category_id: null,
     description: '',
     created_at: '',
