@@ -10,7 +10,7 @@ import FaqsView from '../views/Faqs.vue'
 import ProductsView from '../views/Products.vue'
 import OrdersView from '../views/orders/index.vue'
 import OrderView from '../views/orders/_id.vue'
-import TestView from '../views/test.vue'
+import TestView from '../views/test_new.vue'
 import NotFoundView from '../views/404.vue'
 
 const router = createRouter({

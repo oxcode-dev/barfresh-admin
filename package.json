@@ -19,6 +19,7 @@
     "uuid": "^9.0.0",
     "v-click-outside": "^3.2.0",
     "vue": "^3.3.4",
+    "vue-hooks-form": "^0.3.1",
     "vue-router": "^4.2.4",
     "vue-star-rating": "^2.1.0",
     "vue-sweetalert2": "^5.0.5"
