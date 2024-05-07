@@ -1,23 +1,27 @@
 ## Barfresh Admin CMS
 
-The project is an e-commerce system for skincare products, where users can shop variety of skincare products.
+The project is an CMS system for e-commerce website for skincare products, where admin users can perform the CRUD of the contents of the e-commerce website
+and be able to the product orders and reviews.
 
 ### This system consist of the following pages:
 
-1. Homepage
-2. About us page
-3. Store page: This page consist of lists of products, search input for products searching and list of categories to filter the products
-4. Contact us page
-5. Cart page: This page is for checking the products and quantity in the shopping cart and their total. This page leads the Checkout page)
-6. Checkout page: This page is for confirming and checking out of the products in the cart. The shopping's info is being collected for further processing.
-7. Orders Page: The shoppers provide their email address in order to query their orders
+1. Login Page - Log in admin user to able to have access to the system
+2. Sign Up Page - For admin users registration, in order to have access to the system
+3. Homepage 
+4. Products Page
+5. Categories Page
+6. Orders Page
+7. Review Page
+8. FAQs Page
+9. User Setting Page (Change Email, Change Password and Delete Account)
+10. Ability to logout
 
 ### Technologies Used
 
-+ Nextjs & Reactjs
-+ Redux for state management
++ Vuejs
++ Pinia for state management
 + Tailwind css for styling
-+ Vercel for deployment
++ Netlify for deployment
 + Firebase (storage, database)
 
 Check the project on [Click Here](https://barfresh.vercel.app)
