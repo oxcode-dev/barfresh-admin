@@ -24,4 +24,5 @@ and be able to the product orders and reviews.
 + Netlify for deployment
 + Firebase (storage, database)
 
-Check the project on [Click Here](https://barfresh.vercel.app)
+Check the project on [Click Here](https://barfresh-admin.netlify.app)
+
