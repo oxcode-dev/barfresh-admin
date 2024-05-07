@@ -1,35 +1,23 @@
-# barfresh_admin
+## Barfresh Admin CMS
 
-This template should help get you started developing with Vue 3 in Vite.
+The project is an e-commerce system for skincare products, where users can shop variety of skincare products.
 
-## Recommended IDE Setup
+### This system consist of the following pages:
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+1. Homepage
+2. About us page
+3. Store page: This page consist of lists of products, search input for products searching and list of categories to filter the products
+4. Contact us page
+5. Cart page: This page is for checking the products and quantity in the shopping cart and their total. This page leads the Checkout page)
+6. Checkout page: This page is for confirming and checking out of the products in the cart. The shopping's info is being collected for further processing.
+7. Orders Page: The shoppers provide their email address in order to query their orders
 
-## Customize configuration
+### Technologies Used
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
++ Nextjs & Reactjs
++ Redux for state management
++ Tailwind css for styling
++ Vercel for deployment
++ Firebase (storage, database)
 
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+Check the project on [Click Here](https://barfresh.vercel.app)
