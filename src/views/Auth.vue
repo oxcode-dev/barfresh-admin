@@ -7,18 +7,20 @@
                     <img src="@/assets/logo.png" class="w-20" />
                 </div>
                 <div class="bg-white shadow w-full rounded-lg divide-y divide-gray-200">
-                    <form @submit.prevent="submit" class="px-5 py-7">
+                    <form @submit.prevent="onSubmit" class="px-5 py-7">
                         <p v-if="error" class="text-xs text-red-500 pb-4">
                             {{ error }}
                         </p>
-                        <div>
-                            <label class="font-semibold text-sm text-gray-600 pb-1 block">E-mail</label>
-                            <input required v-model="form.email" type="email" class="border rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full" />
+                        <div class="mb-4">
+                            <label class="font-semibold text-sm text-gray-600 pb-1 block">Email</label>
+                            <input required v-model="email.value" :ref="email.ref" type="email" class="border rounded-lg px-3 py-2 my-1 text-sm w-full" />
+                            <p class="text-red-600 text-xs" v-if="email.error">{{ email.error.message }}</p>
                         </div>
                         
-                        <div>
+                        <div class="mb-4">
                             <label class="font-semibold text-sm text-gray-600 pb-1 block">Password</label>
-                            <input type="password" required v-model="form.password" class="border rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full" />
+                            <input type="password" required v-model="password.value" :ref="password.ref" class="border rounded-lg px-3 py-2 my-1 text-sm w-full" />
+                            <p class="text-red-600 text-xs" v-if="password.error">{{ password.error.message }}</p>
                         </div>
                         
                         <button :disabled="isLoading" type="submit" class="transition duration-200 bg-green-700 hover:bg-green-600 focus:bg-green-700 focus:shadow-sm focus:ring-4 focus:ring-green-500 focus:ring-opacity-50 text-white w-full py-2.5 rounded-lg text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block">
@@ -68,6 +70,29 @@ import { onAuthStateChanged } from "firebase/auth";
 import router from "../router";
 import { useAuthStore } from "../stores/auth";
 import { useFirebaseAuth } from "../composables/useFirebaseAuth";
+import { useForm } from 'vue-hooks-form'
+import { isEmpty } from "../helpers";
+
+const { useField, errors, validateFields } = useForm({
+    defaultValues: {
+        email: null,
+        password: null,
+    },
+    'validateMode': 'submit'
+})
+
+const email = useField('email', {
+    rule: { 
+        required: true,
+    },
+})
+const password = useField('password', {
+    rule: {
+        required: true,
+        min: 6,
+        max: 10,
+    },
+})
 
 const authStore = useAuthStore()
 
@@ -75,28 +100,23 @@ const isLogin = ref(true)
 
 const {error, isLoading, handleSignIn, handleSignUp} = useFirebaseAuth()
 
-const form = ref({
-    email: null,
-    password: null,
-})
-
+const onSubmit = async() => {
+    await validateFields()
+    if(isEmpty(errors)) {
+        if(isLogin.value) {
+            await handleSignIn(email.value, password.value)
+        }
+        else {
+            await handleSignUp(email.value, password.value)
+        }
+    }
+}
 
 const switchForm = () => {
     isLogin.value = !isLogin.value
     error.value = ''
-    form.value = {
-        email: null,
-        password: null,
-    }
-}
-
-async function submit() {
-    if(isLogin.value) {
-        handleSignIn(form.value.email, form.value.password)
-    }
-    else {
-        handleSignUp(form.value.email, form.value.password)
-    }
+    email.value = ''
+    password.value = null
 }
 
 onBeforeMount(() => {

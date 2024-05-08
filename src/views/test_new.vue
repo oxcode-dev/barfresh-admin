@@ -18,10 +18,13 @@ const { useField, errors, validateFields } = useForm({
         username: 'info@talent1.com',
         password: 'word1223'
     },
-    'validateMode': 'submit'
+    // 'validateMode': 'submit'
 })
 const username = useField('username', {
-    rule: { required: true },
+    rule: { 
+        required: true,
+        // pattern: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
+    },
     // validator: (rule, value) => {
     //     var validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
     //     if (value !== 'Bob') {

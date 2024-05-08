@@ -31,7 +31,6 @@ const form = ref({
     password: null,
     password_confirm: null,
 })
-// const isLoading = ref(false)
 
 const { isLoading, handleChangePassword} = useFirebaseAuth()
 
