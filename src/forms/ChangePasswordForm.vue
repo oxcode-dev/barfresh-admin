@@ -36,7 +36,6 @@ const { isLoading, handleChangePassword} = useFirebaseAuth()
 
 const handleUpdatePassword = () => {
     let regex = /^(?=.*[0-9])[a-zA-Z0-9]{6,16}$/;
-    // let regex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/;
 
     if(!regex.test(form.value.password)){
         return alert('Password length must be at least 6 characters, including UPPER/lowercase, and number.')
