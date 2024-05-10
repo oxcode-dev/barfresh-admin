@@ -1,7 +1,7 @@
 ## Barfresh Admin CMS
 
 The project is an CMS system for e-commerce website for skincare products, where admin users can perform the CRUD of the contents of the e-commerce website
-and be able to the product orders and reviews.
+and be able to see the product orders and reviews.
 
 ### This system consist of the following pages
 
