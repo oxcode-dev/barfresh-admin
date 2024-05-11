@@ -22,6 +22,6 @@ and be able to see the product orders and reviews.
 + Pinia for state management
 + Tailwind css for styling
 + Netlify for deployment
-+ Firebase (storage, database)
++ Firebase (storage, database, authentication)
 
 Check the project on [Click Here](https://barfresh-admin.netlify.app)
